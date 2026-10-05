@@ -1,0 +1,374 @@
+{
+  "info": {
+    "_postman_id": "c62b5d4e-8622-498c-a17a-5df977e8a931",
+    "name": "OmniSync CRM - API & Webhooks Collection",
+    "description": "Koleksi API & Mock Webhooks untuk OmniSync CRM (Studi Kasus: Rancaekek Supply Co.). Digunakan untuk simulasi pesanan masuk, pesan pelanggan lintas marketplace (Shopee, Tokopedia, Lazada, Blibli, WhatsApp), sinkronisasi inventori real-time, manajemen CS, dan analitik toko.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Mock Webhooks",
+      "description": "Endpoint mock webhooks untuk mensimulasikan order masuk dan pesan masuk dari berbagai kanal marketplace.",
+      "item": [
+        {
+          "name": "Shopee",
+          "item": [
+            {
+              "name": "Order Masuk - Shopee (Simulasi Pemotongan Stok Multi-Kanal)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"external_order_id\": \"SHP-ORDER-20261001-001\",\n  \"customer\": {\n    \"name\": \"Budi Santoso\",\n    \"phone\": \"0812-1111-2222\"\n  },\n  \"items\": [\n    {\n      \"sku\": \"RS-FLC-RNJ-GRY-M\",\n      \"qty\": 1\n    }\n  ],\n  \"status\": \"paid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/shopee/order",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "shopee", "order"]
+                },
+                "description": "Simulasi order marketplace Shopee. Memotong stok SKU bersangkutan di SEMUA channel (Shopee, Tokopedia, Lazada, Blibli) dalam 1 transaksi DB ACID dengan latensi < 2 detik dan menyiarkan pembaruan via Socket.io."
+              }
+            },
+            {
+              "name": "Pesan Masuk - Shopee",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customer\": {\n    \"name\": \"Budi Santoso\",\n    \"phone\": \"0812-1111-2222\"\n  },\n  \"message\": \"Halo min, jaket polar Rinjani warna abu ukuran M apakah ada slot pengiriman instant hari ini?\",\n  \"urgency\": \"high\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/shopee/message",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "shopee", "message"]
+                },
+                "description": "Simulasi pesan obrolan pelanggan dari platform Shopee. Otomatis masuk antrean inbox omni-channel dengan badge oranye Shopee."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tokopedia",
+          "item": [
+            {
+              "name": "Order Masuk - Tokopedia",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"external_order_id\": \"TKP-ORDER-20261001-002\",\n  \"customer\": {\n    \"name\": \"Arya Wiguna\",\n    \"phone\": \"0812-7777-6666\"\n  },\n  \"items\": [\n    {\n      \"sku\": \"RS-PNT-MBB-KHK-L\",\n      \"qty\": 1\n    }\n  ],\n  \"status\": \"paid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/tokopedia/order",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "tokopedia", "order"]
+                }
+              }
+            },
+            {
+              "name": "Pesan Masuk - Tokopedia",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customer\": {\n    \"name\": \"Arya Wiguna\",\n    \"phone\": \"0812-7777-6666\"\n  },\n  \"message\": \"Permisi kak, celana cargo Merbabu Khaki ukuran 32/L bahannya stretch tidak ya?\",\n  \"urgency\": \"medium\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/tokopedia/message",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "tokopedia", "message"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lazada",
+          "item": [
+            {
+              "name": "Order Masuk - Lazada (Idempotency Check)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"external_order_id\": \"LAZ-ORDER-20261001-003\",\n  \"customer\": {\n    \"name\": \"Dewi Lestari\",\n    \"phone\": \"0813-8888-9999\"\n  },\n  \"items\": [\n    {\n      \"sku\": \"RS-BAG-PPD-40L-BLU\",\n      \"qty\": 1\n    }\n  ],\n  \"status\": \"paid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/lazada/order",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "lazada", "order"]
+                },
+                "description": "Jika dikirim ulang dengan external_order_id sama, API akan mengembalikan HTTP 200 dengan idempotent: true tanpa memotong stok kedua kali."
+              }
+            },
+            {
+              "name": "Pesan Masuk - Lazada",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customer\": {\n    \"name\": \"Dewi Lestari\",\n    \"phone\": \"0813-8888-9999\"\n  },\n  \"message\": \"Kak, apakah carrier 40L Papandayan muat untuk laptop 14 inch?\",\n  \"urgency\": \"low\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/lazada/message",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "lazada", "message"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Blibli",
+          "item": [
+            {
+              "name": "Order Masuk - Blibli",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"external_order_id\": \"BLI-ORDER-20261001-004\",\n  \"customer\": {\n    \"name\": \"Hendra Kusuma\",\n    \"phone\": \"0817-2222-3333\"\n  },\n  \"items\": [\n    {\n      \"sku\": \"RS-HAT-EXP-OLV-ALL\",\n      \"qty\": 2\n    }\n  ],\n  \"status\": \"paid\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/blibli/order",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "blibli", "order"]
+                }
+              }
+            },
+            {
+              "name": "Pesan Masuk - Blibli",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customer\": {\n    \"name\": \"Hendra Kusuma\",\n    \"phone\": \"0817-2222-3333\"\n  },\n  \"message\": \"Min topi rimba explorer warna olive apakah water-repellent?\",\n  \"urgency\": \"medium\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/blibli/message",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "blibli", "message"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "WhatsApp",
+          "item": [
+            {
+              "name": "Pesan Masuk - WhatsApp",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customer\": {\n    \"name\": \"Rina Wulandari\",\n    \"phone\": \"0818-4444-5555\"\n  },\n  \"message\": \"Halo admin Rancaekek Supply Co, mau tanya paket komplit jaket stormbreaker L dan celana cargo 32 ready?\",\n  \"urgency\": \"high\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/webhooks/whatsapp/message",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "webhooks", "whatsapp", "message"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Chat & Customer Service",
+      "item": [
+        {
+          "name": "Get All Chat Sessions (Inbox List)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/chats?platform=all&search=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chats"],
+              "query": [
+                { "key": "platform", "value": "all" },
+                { "key": "search", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Chat Messages by Session ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/chats/1/messages",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chats", "1", "messages"]
+            }
+          }
+        },
+        {
+          "name": "Send CS Reply (Menghitung first_response_ms & Reset Unread)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Halo kak! Jaket Stormbreaker ukuran L dan celana cargo ukuran 32 ready siap kirim hari ini ya kak. Mau kami buatkan pesanannya langsung?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chats/1/messages",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chats", "1", "messages"]
+            }
+          }
+        },
+        {
+          "name": "Update Chat Status (Resolve / Open)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chats/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chats", "1", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Customer Intelligence & Orders",
+      "item": [
+        {
+          "name": "Get Customer Detail (Profile, LTV, Loyalty, 5 History, Tags)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Manual Order (CS WhatsApp Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": 1,\n  \"platform\": \"whatsapp\",\n  \"status\": \"paid\",\n  \"items\": [\n    {\n      \"sku\": \"RS-GLV-GDE-BLK-L\",\n      \"qty\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Memotong stok global di 4 platform inventory channel, memperbarui LTV dan automated tags (VIP, dll), mengirim pesan konfirmasi otomatis ke sesi WhatsApp pelanggan."
+          }
+        },
+        {
+          "name": "Update Order Status (Trigger Auto-Tagging)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"returned\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "1", "status"]
+            },
+            "description": "Mengubah status order. Jika status diubah menjadi 'returned' >= 2 kali, pelanggan otomatis memperoleh tag 'Suka Retur'."
+          }
+        },
+        {
+          "name": "Get All Products & Multi-Channel Stocks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Analytics & Demo Lab",
+      "item": [
+        {
+          "name": "Get Dashboard Analytics (Executive KPIs, Sales %, Low Stock Alerts)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/analytics/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "analytics", "dashboard"]
+            },
+            "description": "Mengambil metrik ringkasan eksekutif, persentase penjualan per saluran yang dihitung akurat dari tabel orders, tren 30 hari, daftar alert stok kritis, dan performa CS."
+          }
+        },
+        {
+          "name": "Reset Demo Data ke Kondisi Awal",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/demo/reset",
+              "host": ["{{base_url}}"],
+              "path": ["api", "demo", "reset"]
+            },
+            "description": "Mereset basis data ke kondisi awal seeder secara in-memory/in-process dan menyiarkan event 'demo:reset' via Socket.io ke semua browser yang sedang terhubung."
+          }
+        }
+      ]
+    }
+  ]
+}

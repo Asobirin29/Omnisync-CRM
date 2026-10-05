@@ -1,0 +1,15 @@
+{
+  "name": "omnisync-crm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OmniSync CRM - Omnichannel CRM MVP Demo for Rancaekek Supply Co.",
+  "scripts": {
+    "server": "npm --prefix backend run dev",
+    "seed": "npm --prefix backend run seed",
+    "seed:reset": "npm --prefix backend run seed:reset",
+    "test:tahap2": "npm --prefix backend run test:tahap2",
+    "test:tahap4": "npm --prefix backend run test:tahap4",
+    "test:acceptance": "npm --prefix backend run test:acceptance",
+    "client": "npm --prefix frontend run dev"
+  }
+}
